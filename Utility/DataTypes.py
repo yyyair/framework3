@@ -6,6 +6,8 @@ class Property:
     ACTOR = 3
     THINKER = 4
     COLLISION_WALL = 5
+    CAN_BE_PICKED = 6
+    HAS_INVENTORY = 7
 
 class Direction:
     UP = TOP = 1

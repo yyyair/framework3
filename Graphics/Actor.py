@@ -1,6 +1,6 @@
 __author__ = 'User'
 
-from Graphics.Scene import SceneComponent
+from Graphics.Scene import SceneComponent, Scene
 
 class Actor(SceneComponent):
     def __init__(self, game):
@@ -9,6 +9,7 @@ class Actor(SceneComponent):
         self.sprite = None
         self.height = 32
         self.width = 32
+        self.absolute = False
 
         self.debug = False
 
@@ -17,4 +18,15 @@ class Actor(SceneComponent):
         if self.sprite is None:
             return
         surface = self.sprite.get_surface(dt=self.game.clock.get_time())
-        self.game.screen.blit(surface, (self.x, self.y))
+        camera = self.game.get_scene().camera
+        if self.absolute or camera is None:
+            self.game.screen.blit(surface, (self.x, self.y))
+        else:
+            self.game.screen.blit(surface, (self.x-camera.x, self.y-camera.y))
+
+    def resize(self, w, h):
+        self.width = w
+        self.height = h
+        if self.sprite is not None:
+            self.sprite.width = w
+            self.sprite.height = h

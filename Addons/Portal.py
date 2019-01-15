@@ -1,26 +1,28 @@
 __author__ = 'User'
 
-
 from Mechanics.CollisionActor import CollisionActor
 from Mechanics.Collision import CollisionBox
 from Utility.DataTypes import Property
 
-'''
-Any general game object. Can be projectiles, playersm, items.
-'''
-
-class Entity(CollisionActor):
+class Portal(CollisionActor):
     def __init__(self, game):
         CollisionActor.__init__(self, game)
-        self.name = "entity"
+        self.name = "portal"
         self.height = 64
         self.width = 64
 
-        # Collision
         box = CollisionBox(0, 0, self.width, self.height)
         box.parent = self
         self.collision_body = box
 
+        self.target_x = 223
+        self.target_y = 80
+
+    def draw(self):
+        pass
 
     def on_collision(self, obj):
-        self.log("Collided with %s" % obj.name)
+        if not obj.has_property(Property.COLLISION_WALL):
+            obj.x = self.target_x
+            obj.y = self.target_y
+

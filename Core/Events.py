@@ -27,7 +27,7 @@ class EventManager:
         self.events = {}
         self.game = game
 
-        self.debug = False
+        self.debug = True
     def log(self, x):
         if self.debug:
             print("events: " + str(x))

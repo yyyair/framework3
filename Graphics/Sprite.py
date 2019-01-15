@@ -17,13 +17,21 @@ class Sprite:
 
         # How to crop spritesheet
         self.crop = (0, 0, 32, 32)
+        self.cache = None
+        self.cache_enabled = False
 
         self.debug = False
 
     def get_surface(self, dt):
+        if self.cache_enabled and self.cache is not None:
+            return self.cache
         surface = pygame.Surface((self.material_width, self.material_height), pygame.SRCALPHA)
+        if self.debug:
+            surface.fill((0,0,0))
         surface.blit(self.material, (0,0), area=self.crop)
         surface = pygame.transform.scale(surface, (self.width, self.height))
+        if self.cache_enabled:
+            self.cache = surface
         return surface
 
     def log(self, x):
@@ -42,6 +50,7 @@ class AnimatedSprite(Sprite):
         self.autoplay = False
         self.time_since_last = 0
         self.current_frame_index = 0
+        self.speed = 1
 
     def get_surface(self, dt=1):
         # Check if need to move to next frame
@@ -62,7 +71,7 @@ class AnimatedSprite(Sprite):
                 self.time_since_last = 0
             else:
                 self.log("adding %s" % dt)
-                self.time_since_last += dt
+                self.time_since_last += dt * self.speed
 
         # Crop according to animation
         if self.current_frame in self.frames:
@@ -127,3 +136,21 @@ def sprite_factory(material, animated):
     sprite = Sprite()
     sprite.material = material
     return sprite
+
+def default_walking_animation():
+    s = AnimatedSprite()
+    img = None
+    s.material = img
+    time = 200
+    s.frames = {"up_1":{"crop":(0,0,32,32), "time":time},
+                "down_1":{"crop":(0,64,32,32), "time":time},
+                "left_1":{"crop":(32,0,32,32), "time":time},
+                "right_1":{"crop":(32,64,32,32), "time":time},
+                "up_2":{"crop":(0,32,32,32), "time":time},
+                "down_2":{"crop":(0,96,32,32), "time":time},
+                "left_2":{"crop":(32,32,32,32), "time":time},
+                "right_2":{"crop":(32,96,32,32), "time":time}}
+    s.frame_order = ["up_1", "up_2"]
+    s.frame = "up"
+    s.autoplay = False
+    return s

@@ -50,6 +50,8 @@ class Game(Component):
 
         # Background surface
         self.background = None
+        self.background_color = (255, 255, 255)
+        self.default_font = None
 
         # Game window name
         self.win_name = "PyFrame3"
@@ -79,6 +81,7 @@ class Game(Component):
         self.background = pygame.Surface(self.screen.get_size())
         self.background = self.background.convert()
         self.background.fill((250,250,250))
+        self.default_font = pygame.font.SysFont("calibri", 14)
 
         self.load()
         self.init()
@@ -117,15 +120,23 @@ class Game(Component):
                 elif "buttons" in event.__dict__:
                     pass
         scene = self.get_scene()
+        #self.log(self.clock.get_fps())
         if scene is not None:
             scene.update()
 
     def draw(self):
+        # Background color
+        self.screen.fill(self.background_color)
         # Draw background
-        self.screen.blit(self.background, (0,0))
+        if self.background is not None:
+            self.screen.blit(self.background, (0,0))
         scene = self.get_scene()
         if scene is not None:
             scene.draw()
+        self.default_font.set_bold(True)
+        text = self.default_font.render("FPS: %s" %self.clock.get_fps(), 0, (255,255,0), (0,0,0))
+        self.screen.blit(text, (0,0))
+        self.default_font.set_bold(False)
         # Finish drawing
         pygame.display.flip()
 

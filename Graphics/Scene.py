@@ -3,6 +3,7 @@ __author__ = 'User'
 from Core.Component import GameComponent, ComponentManager
 from Mechanics.Collision import CollisionManager, CollisionBody
 from Utility.DataTypes import Property
+from Graphics.Camera import Camera
 '''
 Component that can appear in a scene
 '''
@@ -31,7 +32,7 @@ class SceneComponent(GameComponent):
     # Also triggers component_moved event.
     # Use for discrete motion
     def set_position(self, x, y):
-        self.log("Moving %s from %s, %s  to %s, %s" % (self.name, self.x, self.y, x, y))
+        #self.log("Moving %s from %s, %s  to %s, %s" % (self.name, self.x, self.y, x, y))
 
         if not self.lock_x:
             self.x = x
@@ -82,6 +83,10 @@ class SceneComponent(GameComponent):
     def on_leave(self):
         pass
 
+    def kill(self):
+        self.game.get_scene().remove(self.name)
+        GameComponent.kill(self)
+
 class SceneCollisionComponent(SceneComponent):
     def __init__(self, game):
         SceneComponent.__init__(self, game)
@@ -99,6 +104,7 @@ class Scene(ComponentManager):
 
         self.gui = None
         self.collision = None
+        self.camera = Camera(game)
 
     # Doesn't actually check that it's a GUIManager object
     def setup_gui(self, gui_manager):
@@ -147,4 +153,10 @@ class Scene(ComponentManager):
         # Update collision, tests for collisions
         if self.collision:
             self.collision.update()
+
+        if self.camera.following is not None:
+            following = self.camera.following
+            x = following.x - self.game.screen.get_width()/2 + following.width/2
+            y = following.y - self.game.screen.get_height()/2 + following.height/2
+            self.camera.set_position(x, y)
 

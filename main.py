@@ -7,6 +7,9 @@ from Graphics.Sprite import default_animated_sprite
 from Graphics.GUI import *
 
 from Addons.Player import Player
+from Addons.World import World
+from Addons.Item import ItemEntity
+
 from Mechanics.CollisionActor import Wall
 class MyGame(Game):
     def __init__(self):
@@ -18,6 +21,9 @@ class MyGame(Game):
     def load(self):
         self.loader.load_image("default", "Images/default.png")
         self.loader.load_image("wall", "Images/wall.png")
+        self.loader.load_image("player", "Images/player.png")
+        self.loader.load_image("world", "Images/world.png")
+        self.loader.load_image("items", "Images/items.png")
 
     def init(self):
         Game.init(self)
@@ -48,7 +54,7 @@ class MyGame(Game):
 
         # Player movement
         player.debug = False
-        amount = 0.0005
+        amount = 0.0020
         self.events.listen("key_down_w", lambda e: player.move_acceleration(0, -amount), player)
         self.events.listen("key_up_w", lambda e: player.move_acceleration(0, amount), player)
 
@@ -61,7 +67,7 @@ class MyGame(Game):
         self.events.listen("key_down_a", lambda e: player.move_acceleration(-amount, 0), player)
         self.events.listen("key_up_a", lambda e: player.move_acceleration(amount, 0), player)
 
-        self.events.listen("mouse_click_1", lambda e: self.log("Clicked %s" % e))
+        self.events.listen("key_up_space", lambda e: player.set_position(self.screen.get_height()/2,self.screen.get_width()/2))
 
         # Add scene to game
         self.add_scene(s)
@@ -76,12 +82,26 @@ class MyGame(Game):
 
         # Create player
         player = Player(self)
-        player.x, player.y = 256, 256
+        player.x, player.y = 512, 416
+        world.camera.following = player
         world.add(player)
+
+        # Add item
+        item = ItemEntity(self)
+        item.x, item.y = 512, 512
+        world.add(item)
 
         # Add temporary wall
         wall = Wall(self)
-        world.add(wall)
+        #world.add(wall)
+
+        # Setup world room
+        world_room = World(self)
+        world_room.setup_walls(world)
+        world.add(world_room)
+
+        self.background_color = (0,0,0)
+        self.background = None
 
         self.set_scene("world")
 
@@ -92,6 +112,8 @@ class MyGame(Game):
 
     def draw(self):
         Game.draw(self)
+
+
 
     # Returns true if a component can listen to an event. Used to lock components when they are inactive.
     # TODO: Rework events so there are per-scene events and global events.

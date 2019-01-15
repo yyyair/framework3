@@ -18,15 +18,17 @@ class Keyboard:
 
     def on_key_down(self, e):
         key_code = e["key"]
-        if key_code not in self.pressed:
-            self.pressed[key_code] = e
+        key = pykey_to_key(e)
+        if key not in self.pressed:
+            self.pressed[key] = e
 
         self.events.invoke("key_down_" + pykey_to_key(e), e)
 
     def on_key_up(self, e):
         key_code = e["key"]
-        if key_code in self.pressed:
-            del self.pressed[key_code]
+        key = pykey_to_key(e)
+        if key in self.pressed:
+            del self.pressed[key]
 
         self.events.invoke("key_up_" + pykey_to_key(e), e)
 

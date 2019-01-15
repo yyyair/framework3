@@ -21,6 +21,8 @@ class Component:
         # Probably bad programming habit
         self.properties = []
 
+        self.dead = False
+
     # Called every game tick
     def update(self):
         pass
@@ -37,9 +39,17 @@ class Component:
     def init(self):
         pass
 
-    def log(self, msg, ignore_debug=False):
+    # Removes the component from game
+    def kill(self):
+        self.dead = True
+        if isinstance(self.parent, ComponentManager):
+            self.parent.remove(self.name)
+        self.name = "dead"
+        self.parent = None
+
+    def log(self, *msg, ignore_debug=False):
         if ignore_debug or self.debug:
-            print(("%s: " % self.name) + str(msg))
+            print(("%s: " % self.name) + " ".join([str(s) for s in msg]))
 
     def has_property(self, prop):
         return prop in self.properties
@@ -122,9 +132,11 @@ class ComponentManager(GameComponent):
 
     def update(self):
         for c in self.components:
-            c.update()
+            if not c.dead:
+                c.update()
 
     def draw(self):
         for c in self.components:
             #self.log("Drawing %s" % c.name)
-            c.draw()
+            if not c.dead:
+                c.draw()
