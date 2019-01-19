@@ -28,6 +28,9 @@ class SceneComponent(GameComponent):
         self.lock_x = False
         self.lock_y = False
 
+        # The room of the component. None = global
+        self.room = None
+
     # Sets the position of the component.
     # Also triggers component_moved event.
     # Use for discrete motion
@@ -83,6 +86,12 @@ class SceneComponent(GameComponent):
     def on_leave(self):
         pass
 
+    def on_created(self):
+        pass
+
+    def on_died(self):
+        pass
+
     def kill(self):
         self.game.get_scene().remove(self.name)
         GameComponent.kill(self)
@@ -128,6 +137,9 @@ class Scene(ComponentManager):
             '''
             if Property.COLLISION in c.properties and self.collision is not None:
                 self.collision.add(c)
+            if Property.GUI in c.properties and self.gui is not None:
+                self.gui.add(c)
+            c.on_created()
 
 
     def draw(self):

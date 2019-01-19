@@ -24,3 +24,31 @@ class Entity(CollisionActor):
 
     def on_collision(self, obj):
         self.log("Collided with %s" % obj.name)
+
+# Allows an Entity to interact in another by standing in its hitbox.
+class InteractionEntity(Entity):
+    def __init__(self, game):
+        Entity.__init__(self , game)
+        self.name = "interaction_entity"
+        self.add_property(Property.HAS_INTERACTION)
+
+    # Update the current interaction of the collided player.
+    def on_collision(self, obj):
+        if obj.has_property(Property.CAN_INTERACT):
+            obj.interact = self
+
+    def on_collision_end(self, obj):
+        self.log("Collision ended with", obj.name)
+        if obj.has_property(Property.CAN_INTERACT) and obj.interact == self:
+            obj.interact = None
+
+    def interact(self, obj):
+        pass
+
+# An entity that can in theory be controlled and moved
+class UnitEntity(Entity):
+    pass
+
+# A unit entity that can be interacted, should be used for NPC
+class InteractionUnitEntity(UnitEntity, InteractionEntity):
+    pass

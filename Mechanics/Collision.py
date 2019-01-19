@@ -9,6 +9,7 @@ class CollisionBody:
     def __init__(self):
         self.parent = None
         self.mass = 0
+        self.solid = True
 
     def collides(self, body):
         return False
@@ -32,6 +33,10 @@ class CollisionBox(Rectangle, CollisionBody):
 
     def center_of_mass(self):
         return Point(self.x+self.width/2, self.y+self.height/2)
+
+    def set_position(self, x, y):
+        self.x = x
+        self.y = y
 
     def resize(self, w, h):
         self.height = h
@@ -84,36 +89,53 @@ class CollisionManager(ComponentManager):
         # Draw all collision bodies for debug
         self.debug_draw = True
 
+        self.debug = False
+
+        # Save a cache of collisions to detect changes
+        self.collisions = []
+
 
     def update(self):
         # Check collisions
 
-        c_num = len(self.components)
+
         collisions = []
+
+        # Ignore walls since they are handled on movement
+        candidates = [c for c in self.components if not c.has_property(Property.COLLISION_WALL)]
+        c_num = len(candidates)
         for i in range(c_num):
             for j in range(i+1, c_num):
 
                 # If something collision related doesn't work, this might cause it
-                if self.components[i].has_property(Property.COLLISION_WALL) and self.components[j].has_property(Property.COLLISION_WALL):
+                if candidates[i].has_property(Property.COLLISION_WALL) and candidates[j].has_property(Property.COLLISION_WALL):
                     continue
 
-                c_1 = self.components[i].collision_body
-                c_2 = self.components[j].collision_body
+                c_1 = candidates[i].collision_body
+                c_2 = candidates[j].collision_body
                 if c_1 is None or c_2 is None:
                     self.log("wow")
                 elif c_1.collides(c_2):
                     self.log("(%s, %s) collision" % (c_1.parent.name, c_2.parent.name))
-                    collisions.append((self.components[i], self.components[j]))
+                    collisions.append((candidates[i], candidates[j]))
 
         for collision in collisions:
             c1, c2 = collision[0], collision[1]
-            print(c1, c2)
             if c1 is None or c2 is None or c1.name == "dead" or c2.name == "dead":
                 self.log("bad")
                 continue
-            self.log("sudoku")
             c1.on_collision(c2)
             c2.on_collision(c1)
+
+        for collision in [c for c in self.collisions if c not in collisions]:
+            c1, c2 = collision[0], collision[1]
+            if c1 is None or c2 is None or c1.name == "dead" or c2.name == "dead":
+                self.log("bad")
+                continue
+            c1.on_collision_end(c2)
+            c2.on_collision_end(c1)
+
+        self.collisions = [(c[0], c[1]) for c in collisions if c[0].name != "dead" and c[1].name != "dead"]
 
     # Returns all
     def find_collisions_by_component(self, body, filter=None, max_amount=float("inf")):

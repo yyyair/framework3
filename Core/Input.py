@@ -68,6 +68,30 @@ def pykey_to_key(pykey_data):
             return "space"
         elif pykey == 13:
             return "enter"
+        elif pykey == 282:
+            return "f1"
+        elif pykey == 283:
+            return "f2"
+        elif pykey == 284:
+            return "f3"
+        elif pykey == 285:
+            return "f4"
+        elif pykey == 286:
+            return "f5"
+        elif pykey == 287:
+            return "f6"
+        elif pykey == 288:
+            return "f7"
+        elif pykey == 289:
+            return "f8"
+        elif pykey == 290:
+            return "f9"
+        elif pykey == 291:
+            return "f10"
+        elif pykey == 292:
+            return "f11"
+        elif pykey == 293:
+            return "f12"
         return "unknown_key"
 
 '''
@@ -93,3 +117,15 @@ class Mouse:
         else:
             self.events.invoke("mouse_down_1", e)
         self.states["1"] = not self.states["1"]
+
+    def is_mouse_1_pressed(self):
+        return self.states["1"]
+
+    def position(self):
+        return pygame.mouse.get_pos()
+
+    def get_x(self):
+        return self.position()[0]
+
+    def get_y(self):
+        return self.position()[1]

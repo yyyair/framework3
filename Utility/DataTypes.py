@@ -8,6 +8,8 @@ class Property:
     COLLISION_WALL = 5
     CAN_BE_PICKED = 6
     HAS_INVENTORY = 7
+    HAS_INTERACTION  = 8
+    CAN_INTERACT = 9
 
 class Direction:
     UP = TOP = 1

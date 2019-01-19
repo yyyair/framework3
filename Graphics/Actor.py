@@ -13,6 +13,10 @@ class Actor(SceneComponent):
 
         self.debug = False
 
+        # Scaling when resizing
+        self.scale_width = True
+        self.scale_height = True
+
     def draw(self):
         #self.log("%s being drawn!" % self.name)
         if self.sprite is None:
@@ -30,3 +34,8 @@ class Actor(SceneComponent):
         if self.sprite is not None:
             self.sprite.width = w
             self.sprite.height = h
+
+    def scale(self, xratio, yratio):
+        new_width = self.width if not self.scale_width else self.width * xratio
+        new_height = self.height if not self.scale_height else self.height * yratio
+        self.resize(new_width, new_height)

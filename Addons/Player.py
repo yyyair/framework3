@@ -12,6 +12,7 @@ class Player(CollisionActor):
         CollisionActor.__init__(self, game)
         self.name = "player"
         self.add_property(Property.HAS_INVENTORY)
+        self.add_property(Property.CAN_INTERACT)
         self.debug = True
         self.log(self.properties)
         # Movement
@@ -32,6 +33,8 @@ class Player(CollisionActor):
 
         self.bind_movement_keys()
 
+        self.interact = None
+
 
     def bind_movement_keys(self):
         events = self.game.events
@@ -49,6 +52,8 @@ class Player(CollisionActor):
 
         events.listen("key_down_space", lambda e: self.start_sprint(), self)
         events.listen("key_up_space", lambda e: self.stop_sprint(), self)
+
+        events.listen("key_up_e", lambda e: print(self.interact) if self.interact is None else self.interact.interact(self))
 
     def start_move_up(self):
         print("Asdfa")

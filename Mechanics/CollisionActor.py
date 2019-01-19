@@ -19,6 +19,9 @@ class CollisionActor(Actor):
     def on_collision(self, obj):
         pass
 
+    def on_collision_end(self, obj):
+        pass
+
     def move_position(self, dx, dy):
         # Currently prevents player from walking into walls
         collision = self.collision_body.parent.parent

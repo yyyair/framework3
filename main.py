@@ -9,13 +9,14 @@ from Graphics.GUI import *
 from Addons.Player import Player
 from Addons.World import World
 from Addons.Item import ItemEntity
+from Addons.Shop import Shop
 
 from Mechanics.CollisionActor import Wall
 class MyGame(Game):
     def __init__(self):
         Game.__init__(self)
-        self.default_height *= 2
-        self.default_width *= 2
+        self.default_height = 840
+        self.default_width = 1480
 
 
     def load(self):
@@ -24,6 +25,7 @@ class MyGame(Game):
         self.loader.load_image("player", "Images/player.png")
         self.loader.load_image("world", "Images/world.png")
         self.loader.load_image("items", "Images/items.png")
+        self.loader.load_image("pikachu", "Images/pikachu.png")
 
     def init(self):
         Game.init(self)
@@ -36,13 +38,29 @@ class MyGame(Game):
         s.setup_gui(gui)
 
         test_gui = RichTextbox(game)
-        gui.add(test_gui)
+        #gui.add(test_gui)
 
         test_button = Button(game)
         test_button.set_position(0, 512)
         test_button.resize(96, 32)
         test_button.func = self.start_game
         gui.add(test_button)
+
+        scroller = ScrollBar(game)
+        scroller.set_position(512, 128)
+        scroller.resize(16, 256)
+        scroller.max_index = 4
+        scroller.current_index = 0
+        gui.add(scroller)
+
+        mbox = MessageBox(game)
+        mbox.set_position(572, 256)
+        s.add(mbox)
+
+        bundle = TestCanvas(game)
+        bundle.set_position(572, 32)
+        bundle.resize(512, 512)
+        gui.add(bundle)
 
 
         # Player object
@@ -91,21 +109,31 @@ class MyGame(Game):
         item.x, item.y = 512, 512
         world.add(item)
 
+        # Add shop
+        shop = Shop(self)
+        shop.set_position(256, 512)
+        world.add(shop)
+
+
         # Add temporary wall
         wall = Wall(self)
         #world.add(wall)
 
         # Setup world room
         world_room = World(self)
-        world_room.setup_walls(world)
+        world_room.setup_room(world, world_room.width * 3, world_room.height * 3)
         world.add(world_room)
 
         self.background_color = (0,0,0)
         self.background = None
 
+        self.events.listen("key_up_f1", lambda e: self.toggle_debug(world.collision), None)
+
         self.set_scene("world")
 
-
+    def toggle_debug(self, component):
+        component.debug = not component.debug
+        component.debug_draw = not component.debug_draw
 
     def update(self):
         Game.update(self)

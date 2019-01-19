@@ -72,6 +72,9 @@ class Rectangle(SpaceObject):
     def __contains__(self, point):
         return self.x <= point.x <= self.x+self.width and self.y <= point.y <= self.y + self.height
 
+    def __str__(self):
+        return "%sx%s at (%s,%s)" % (self.width, self.height, self.x, self.y)
+
 # Rectangle that can rotate
 class AngledRectangle(Rectangle):
     def __init__(self, x, y, width, height):

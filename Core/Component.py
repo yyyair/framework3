@@ -116,8 +116,10 @@ class ComponentManager(GameComponent):
 
         # Remove them
         for c in to_remove:
-            self.components.remove(c)
-        self.components_names.remove(c_name)
+            if c in self.components:
+                self.components.remove(c)
+        if c_name in self.components_names:
+            self.components_names.remove(c_name)
 
     # Removes a component by pointer
     def remove_absolute(self, c):

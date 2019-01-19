@@ -3,38 +3,29 @@ __author__ = 'User'
 from Graphics.Actor import Actor
 from Graphics.Sprite import Sprite
 from Addons.Portal import Portal
+from Gameplay.Room import Room
+from Utility.Geometry import Rectangle
 
 from Mechanics.CollisionActor import InvisibleWall
 
 # TODO: Make it inherit from subclass Gameplay.Room
-class World(Actor):
+class World(Room):
     def __init__(self, game):
-        Actor.__init__(self, game)
-        self.sprite = Sprite()
-        self.walls = []
-
-        self.sprite.material = self.game.loader.get_image("world").convert()
-        self.sprite.material_width = 768
-        self.sprite.material_height = 909
-        self.sprite.crop = (0, 0, 768, 909)
+        Room.__init__(self, game)
+        self.background.material = self.game.loader.get_image("world").convert()
+        self.background.material_width = 768
+        self.background.material_height = 909
+        self.background.crop = (0, 0, 768, 909)
         self.width = 768
         self.height = 909
 
-        self.sprite.debug = False
-        self.sprite.cache_enabled = True
+        self.background.debug = False
+        self.background.cache_enabled = True
 
-    def update(self):
-        Actor.update(self)
+        self.walls = [Rectangle(65, 92, 128, 20), Rectangle(32, 112, 32, 208), Rectangle(128, 188, 96, 54), Rectangle(289, 92, 95, 54), Rectangle(63, 316, 129, 34)]
 
-    def resize(self, w, h):
-        old_w = self.width
-        old_h = self.height
-        Actor.resize(self, w, h)
-        for wall in self.walls:
-            wall.resize(wall.width * float(w)/old_w, wall.height * float(h)/old_h)
-            wall.set_position(wall.x * w/old_w, wall.y * h / old_h)
-
-    def setup_walls(self, scene):
+    def _setup_walls(self, scene):
+        # TODO: Add walls in initalization to room, then listen for an entered_scene event to actually create walls
         wall1 = InvisibleWall(self.game)
         wall1.set_position(65, 92)
         wall1.resize(128, 20)
@@ -60,14 +51,6 @@ class World(Actor):
 
         self.resize(768*3, 909*3)
 
-        portal.target_x, portal.target_y = self.room_coordinates_to_real(portal.target_x, portal.target_y)
+        #portal.target_x, portal.target_y = self.room_coordinates_to_real(portal.target_x, portal.target_y)
 
-    def add_wall(self, x, y, w, h, scene):
-        wall = InvisibleWall(self.game)
-        wall.set_position(x, y)
-        wall.resize(w, h)
-        self.walls.append(wall)
-        scene.add(wall)
 
-    def room_coordinates_to_real(self, x, y):
-        return x * self.width/self.sprite.material_width, y * self.height/self.sprite.material_height
