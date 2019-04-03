@@ -1,15 +1,31 @@
 __author__ = 'User'
 
+'''
+Collection of budget enums
+'''
+
+# Component properties
 class Property:
+    # Core properties
     GUI = 1
     COLLISION = 2
     ACTOR = 3
     THINKER = 4
     COLLISION_WALL = 5
-    CAN_BE_PICKED = 6
-    HAS_INVENTORY = 7
-    HAS_INTERACTION  = 8
-    CAN_INTERACT = 9
+
+    # Gameplay properties
+    CAN_BE_PICKED = 100
+    HAS_INVENTORY = CAN_PICK = 101
+    HAS_INTERACTION  = CAN_BE_INTERACTED = 110
+    CAN_INTERACT = 111
+    UNIT = 120
+    PLAYER = 121
+    SHOP = 122
+    PROJECTILE = 123
+
+# Item IDs
+class Item:
+    APPLE = 1
 
 class Direction:
     UP = TOP = 1
@@ -28,7 +44,7 @@ def property_str(property):
     elif property == Property.THINKER:
         return "thinker"
     else:
-        return "unknown"
+        return "Unnamed%s" % str(property)
 
 def direction_str(dir):
     if dir == Direction.UP:

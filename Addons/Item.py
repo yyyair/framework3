@@ -26,5 +26,5 @@ class ItemEntity(Entity):
         if obj.has_property(Property.HAS_INVENTORY):
             self.log("sudoku2")
             if not self.dead:
-
+                obj.inventory.append(self.id)
                 self.kill()

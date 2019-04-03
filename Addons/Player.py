@@ -4,8 +4,11 @@ from Mechanics.CollisionActor import CollisionActor
 from Mechanics.Collision import CollisionBox
 from Graphics.Sprite import default_animated_sprite, default_walking_animation
 from Graphics.Utility import rectangle_surface
+from Utility.Geometry import Point
 
 from Utility.DataTypes import Direction, Property
+from Addons.Item import ItemEntity
+from Gameplay.Projectile import Projectile
 
 class Player(CollisionActor):
     def __init__(self, game):
@@ -35,6 +38,12 @@ class Player(CollisionActor):
 
         self.interact = None
 
+        self.inventory = []
+        self.inventory_size = 9
+        self.selected_slot = -1
+
+        self.direction = Point(0,0)
+
 
     def bind_movement_keys(self):
         events = self.game.events
@@ -55,30 +64,46 @@ class Player(CollisionActor):
 
         events.listen("key_up_e", lambda e: print(self.interact) if self.interact is None else self.interact.interact(self))
 
+        events.listen("key_down_1", lambda e: self.set_slot(0), self)
+        events.listen("key_down_2", lambda e: self.set_slot(1), self)
+        events.listen("key_down_3", lambda e: self.set_slot(2), self)
+        events.listen("key_down_4", lambda e: self.set_slot(3), self)
+        events.listen("key_down_5", lambda e: self.set_slot(4), self)
+        events.listen("key_down_6", lambda e: self.set_slot(5), self)
+        events.listen("key_down_7", lambda e: self.set_slot(6), self)
+        events.listen("key_down_8", lambda e: self.set_slot(7), self)
+        events.listen("key_down_9", lambda e: self.set_slot(8), self)
+
+        events.listen("key_down_space", lambda e: self.shoot_projectile(), self)
+    def set_slot(self, n):
+        self.selected_slot = n
     def start_move_up(self):
-        print("Asdfa")
         self.move_mode(0, -self.speed)
         self.sprite.set_frame("up_1")
         self.sprite.frame_order = ["up_1", "up_2"]
         self.sprite.autoplay = True
+        self.direction.x, self.direction.y = 0, -1
 
     def start_move_down(self):
         self.move_mode(0, self.speed)
         self.sprite.set_frame("down_1")
         self.sprite.frame_order = ["down_1", "down_2"]
         self.sprite.autoplay = True
+        self.direction.x, self.direction.y = 0, 1
 
     def start_move_right(self):
         self.move_mode(self.speed, 0)
         self.sprite.set_frame("right_1")
         self.sprite.frame_order = ["right_1", "right_2"]
         self.sprite.autoplay = True
+        self.direction.x, self.direction.y = 1, 0
 
     def start_move_left(self):
         self.move_mode(-self.speed, 0)
         self.sprite.set_frame("left_1")
         self.sprite.frame_order = ["left_1", "left_2"]
         self.sprite.autoplay = True
+        self.direction.x, self.direction.y = -1, 0
 
     def stop_move_up(self):
         self.move_mode(0, -self.v_y)
@@ -131,17 +156,30 @@ class Player(CollisionActor):
 
     def get_inventory_surface(self):
         wrapper = rectangle_surface(512, 64, color=(171, 176, 186), border_width=2)
-        item_container = [rectangle_surface(48, 48, color=(121, 125, 132), border_width=1) for i in range(9)]
+        item_container = [rectangle_surface(48, 48, color=(121, 125, 132), border_width=3 if i == self.selected_slot else 1) for i in range(9)]
+        dummy_item = ItemEntity(self.game)
+        dummy_item.set_position(0,0)
+        dummy_item.absolute = True
+        for item in self.inventory:
+            dummy_item.draw_on(item_container[0])
+
         for i in range(9):
             wrapper.blit(item_container[i], (8*(i+1) + i * 48, wrapper.get_height()/2 - item_container[i].get_height()/2))
         return wrapper
 
-    def draw(self):
-        CollisionActor.draw(self)
+    def shoot_projectile(self):
+        projectile = Projectile(self.game)
+        projectile.direction.x, projectile.direction.y = self.direction.x, self.direction.y
+        projectile.resize(16,16)
+        projectile.set_position(self.x + self.width/2, self.y + self.height/2)
+        self.game.get_scene().add(projectile)
+
+    def draw_on(self, surface):
+        CollisionActor.draw_on(self, surface)
 
         # Draw inventory
         inventory = self.get_inventory_surface()
-        self.game.screen.blit(inventory, (self.game.screen.get_width()/2-inventory.get_width()/2,self.game.screen.get_height()-inventory.get_height()-8))
+        surface.blit(inventory, (self.game.screen.get_width()/2-inventory.get_width()/2,self.game.screen.get_height()-inventory.get_height()-8))
 
     def update(self):
         CollisionActor.update(self)

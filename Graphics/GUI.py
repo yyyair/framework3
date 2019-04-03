@@ -10,6 +10,7 @@ import pygame
 '''
 # TODO: Improve mouse_down and mouse_up events
 # TODO: Add local GUI events (value changed, hover, etc)
+# TODO: More GUI elements
 '''
 class GUIManager(ComponentManager):
     def __init__(self, game):
@@ -393,6 +394,9 @@ class RichTextbox(Textbox):
         self.vertical_mode = Label.TOP
         self.padding["vertical"] = 16
 
+        self.cached_text = None
+        self.cached_container = None
+
     def handle_input(self, e):
         key = pykey_to_key(e)
         if key == "enter":
@@ -413,11 +417,18 @@ class RichTextbox(Textbox):
             Textbox.handle_input(self, e)
 
     def draw_on(self, surface):
+        background_surface = None
+
+        if self.cache and (self.update_cache or self.cached_container is None):
+            self.cached_container =  rectangle_surface(self.width, self.height, border_width=3)
+            self.update_cache = False
+
+        background_surface = self.cached_container.copy() if self.cache else  rectangle_surface(self.width, self.height, border_width=3)
         lines = self.value.split("\n")
         render_lines = [self.font.render(line, 1, self.color) for line in lines]
         x = self.get_x_offset(render_lines[0])
         y = self.get_y_offset(render_lines[0])
-        background_surface = rectangle_surface(self.width, self.height, border_width=3)
+        #background_surface = rectangle_surface(self.width, self.height, border_width=3)
         line_space = 16
         # Determine when to draw pointer
         ptr_count = self.pointer
@@ -477,6 +488,17 @@ class ScrollBar(GUIActor):
 
         self.debug = True
         self.captured = False
+
+        # Style
+        self.container_color = (236,240,241)
+        self.bar_color = (189,195,199)
+
+        self.container_border = 1
+        self.bar_border = 0
+
+        # Layout
+        self.container_surface = self.create_container()
+
     def resize(self, w, h):
         GUIActor.resize(self, w, h)
         self.max_y = self.y + self.height + self.max_y_offset
@@ -486,11 +508,22 @@ class ScrollBar(GUIActor):
         self.max_y = self.y + self.height + self.max_y_offset
         self.min_y = self.y + self.min_y_offset
 
+    def create_container(self):
+        return rectangle_surface(self.width, self.height, border_width=self.container_border, color=self.container_color)
+
     def draw_on(self, surface):
-        container = rectangle_surface(self.width, self.height, border_width=1, color=(189,195,199))
-        scroller = rectangle_surface(self.width, max(self.min_height, self.height / (self.max_index+1)), border_width=1, color=(236,240,241))
+        container = None
+        scroller = None
+        # Update cache
+        if self.cache and (self.container_surface is None or self.update_cache):
+            self.container_surface = self.create_container()
+            self.update_cache = False
+
+        container = self.container_surface.copy() if self.cache else self.create_container()
+        scroller = rectangle_surface(self.width-2, max(self.min_height, self.height / (self.max_index+1)), border_width=self.bar_border, color=self.bar_color)
         y = self.height * self.current_index/(self.max_index+1)
-        container.blit(scroller, (0, y if ((self.y + self.height) - y) > self.min_height else self.y + self.height - self.min_height))
+        scroller_y = (y+1 if ((self.y+1 + self.height) - y) > self.min_height else self.y + self.height - self.min_height - 1)
+        container.blit(scroller, (1, scroller_y))
         surface.blit(container, (self.x, self.y))
 
     def update(self):
@@ -524,7 +557,13 @@ class GUIBundle(GUIActor):
         self.name = "gui_bundle"
         self.debug = True
 
+        self.container = None
+        self.cache = False
+
     def draw_on(self, surface):
+        if self.update_cache or self.container is None:
+            self.container = rectangle_surface(self.width, self.height, border_width=1)
+            self.update_cache =False
         container = rectangle_surface(self.width, self.height, border_width=1)
         for component in self.components:
             component_surface = rectangle_surface(component.width, component.height, border_width=2, color=(255,0,0))
@@ -579,11 +618,17 @@ class GUIBundle(GUIActor):
             component.set_position(component.x+dx, component.y+dy)
             self.log(component.x, component.y)
 
+    def add(self, actor):
+        if not isinstance(actor, GUIActor):
+            self.log("Cant add %s, not a GUIActor"%actor.name)
+            return
+        self.components.append(actor)
+
 
 class TestCanvas(GUIBundle):
     def __init__(self, game):
         GUIBundle.__init__(self, game)
-        self.resize(256, 256)
+        self.resize(96+3, 96)
         scroller = ScrollBar(self.game)
         scroller.resize(16, 96)
         scroller.set_position(96, 0)
@@ -593,13 +638,14 @@ class TestCanvas(GUIBundle):
         textbox = RichTextbox(self. game)
         textbox.resize(96, 96)
 
-        self.components.append(scroller)
-        self.components.append(textbox)
+        #self.components.append(scroller)
+        #self.components.append(textbox)
 
 class ScrollableTextbox(GUIBundle):
     def __init__(self, game):
         GUIBundle.__init__(self, game)
 
+# Shows a GUIBundle that takes control of scene input.
 class MessageBox(GUIBundle):
     def __init__(self, game):
         GUIBundle.__init__(self, game)
@@ -625,7 +671,6 @@ class MessageBox(GUIBundle):
         surface.blit(container, (self.x, self.y))
 
     def close(self):
-        print("abcd")
         self.kill()
 
     def on_created(self):
@@ -634,3 +679,32 @@ class MessageBox(GUIBundle):
 
     def on_deactive(self):
         self.parent.locked = False
+
+# Simple GUIActor that can be dragged.
+class DragObject(GUIActor):
+    def __init__(self, game):
+        GUIActor.__init__(self, game)
+        self.init_x = self.init_y = None
+        self.resizable = True
+        self.resizing = False
+
+    def update(self):
+        if self.active and self.game.mouse.is_mouse_1_pressed():
+            mx, my = self.game.mouse.get_x(), self.game.mouse.get_y()
+            if self.init_y is None:
+                self.init_x, self.init_y = mx, my
+                if self.resizable:
+                    print(Point(mx, my).distance_sq(Point(self.x + self.width, self.y + self.height)))
+                    if Point(mx, my).distance_sq(Point(self.x + self.width, self.y + self.height)) < 48:
+                        self.resizing = True
+            # Convert global axis to objedt axis
+            dx, dy = self.init_x - mx, self.init_y - my
+            if self.resizing:
+                self.resize(self.width + dx, self.height + dy)
+            else:
+                self.set_position(self.x - dx, self.y - dy)
+            self.init_x, self.init_y = mx, my
+        else:
+            self.init_x = self.init_y = None
+            self.resizing = False
+

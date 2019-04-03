@@ -26,6 +26,8 @@ class MyGame(Game):
         self.loader.load_image("world", "Images/world.png")
         self.loader.load_image("items", "Images/items.png")
         self.loader.load_image("pikachu", "Images/pikachu.png")
+        x = self.loader.scene_from_file("Data/Scenes/main.json")
+        self.add_scene(x)
 
     def init(self):
         Game.init(self)
@@ -43,24 +45,29 @@ class MyGame(Game):
         test_button = Button(game)
         test_button.set_position(0, 512)
         test_button.resize(96, 32)
-        test_button.func = self.start_game
-        gui.add(test_button)
+        test_button.func = lambda: self.start_game()
+        s.add(test_button)
 
         scroller = ScrollBar(game)
         scroller.set_position(512, 128)
         scroller.resize(16, 256)
         scroller.max_index = 4
         scroller.current_index = 0
-        gui.add(scroller)
+        s.add(scroller)
 
         mbox = MessageBox(game)
         mbox.set_position(572, 256)
-        s.add(mbox)
+        #s.add(mbox)
+
+        drag = DragObject(game)
+        drag.set_position(0,0)
+        s.add(drag)
 
         bundle = TestCanvas(game)
+        #bundle.add(drag)
         bundle.set_position(572, 32)
         bundle.resize(512, 512)
-        gui.add(bundle)
+        s.add(bundle)
 
 
         # Player object

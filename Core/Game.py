@@ -73,7 +73,7 @@ class Game(Component):
         self.clock = pygame.time.Clock()
 
         # Initialize basic game features
-        self.loader = Loader()
+        self.loader = Loader(self)
         self.events = EventManager(self)
         self.keyboard = Keyboard(self.events)
         self.mouse = Mouse(self.events)

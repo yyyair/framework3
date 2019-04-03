@@ -1,0 +1,66 @@
+{
+  "name": "default_scene",
+  "type": "generic",
+  "features": {
+    "gui": true,
+    "collision": true
+  },
+  "graphics": "rooms",
+  "content":[
+    {
+      "name": "label1",
+      "type": "label",
+      "params":{
+        "value":"Main Menu Template",
+        "x":64,
+        "y":32
+      }
+    },
+    {
+      "name": "button1",
+      "type": "textbox",
+      "params":{
+        "value":"Start",
+        "x":32,
+        "y": 128,
+        "horizontal_mode":0,
+        "padding":{"vertical":0, "horizontal":0}
+      }
+    },
+    {
+      "name": "button2",
+      "type": "button",
+      "params":{
+        "value":"Options",
+        "x":32,
+        "y": 196
+      }
+    },
+    {
+      "name": "button2",
+      "type": "button",
+      "params":{
+        "value":"Quit",
+        "x":32,
+        "y": 256
+      }
+    },
+    {
+      "name": "player",
+      "type": "_player",
+      "params":{
+        "value":"test",
+        "x":300
+      }
+    },
+    {
+      "name": "whatever",
+      "type": "include",
+      "path": "Forms/login.json"
+    }
+  ],
+  "rooms":[
+
+  ],
+  "tileset":""
+}
