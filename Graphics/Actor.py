@@ -1,7 +1,7 @@
 __author__ = 'User'
 
 from Graphics.Scene import SceneComponent, Scene
-
+from Utility.DataTypes import PositionType
 class Actor(SceneComponent):
     def __init__(self, game):
         SceneComponent.__init__(self, game)
@@ -9,7 +9,7 @@ class Actor(SceneComponent):
         self.sprite = None
         self.height = 32
         self.width = 32
-        self.absolute = False
+        self.position_type = PositionType.RELATIVE
 
         self.debug = False
 
@@ -38,7 +38,7 @@ class Actor(SceneComponent):
             self.log("Can't draw, no surface")
             return
 
-        if self.absolute or camera is None:
+        if self.position_type == PositionType.ABSOLUTE or camera is None:
             _surface.blit(surface, (self.x, self.y))
         else:
             _surface.blit(surface, (self.x-camera.x, self.y-camera.y))

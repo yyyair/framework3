@@ -33,6 +33,16 @@ class Direction:
     LEFT = 3
     RIGHT = 4
 
+class PositionType:
+    # Absolute position (ignores everything)
+    ABSOLUTE = 1
+    # Position relative to parent
+    RELATIVE = 2
+    # Position is expressed as ratio
+    PROPORTIONAL = 3
+    # Position is expressed as ratio of parent object
+    RELATIVE_PROPORTIONAL = 4
+
 
 def property_str(property):
     if property == Property.GUI:

@@ -4,6 +4,7 @@ from Core.Component import GameComponent, ComponentManager
 from Mechanics.Collision import CollisionManager, CollisionBody
 from Utility.DataTypes import Property
 from Graphics.Camera import Camera
+from Utility.DataTypes import PositionType
 '''
 Component that can appear in a scene
 '''
@@ -15,6 +16,7 @@ class SceneComponent(GameComponent):
         # Position
         self.x = 0
         self.y = 0
+        self.position_type = PositionType.ABSOLUTE
 
         # Velocity
         self.v_x = 0
@@ -41,6 +43,22 @@ class SceneComponent(GameComponent):
             self.x = x
         if not self.lock_y:
             self.y = y
+
+    def get_position(self):
+        if self.position_type == PositionType.ABSOLUTE:
+            return self.x, self.y
+        elif self.position_type == PositionType.RELATIVE:
+            return self.x, self.y
+
+        # x and y are % of parent location
+        elif self.position_type == PositionType.PROPORTIONAL:
+            if self.parent.has_property():
+                parent_width = self.parent.width
+                parent_height = self.parent.height
+            else:
+                parent_width = self.game.default_width
+                parent_height = self.game.default_height
+            return self.x * parent_width, self.y * parent_height
 
 
     def move_position(self, dx, dy):

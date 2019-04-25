@@ -85,6 +85,27 @@ class Loader:
     def gui_from_file(self, path):
         pass
 
+    def load_json_resources(self, path, parent=""):
+        with open(path) as fp:
+            data = json.load(fp)
+        if data is None:
+            return
+
+        if parent!="":
+            parent += "."
+        # Load images
+        if "images" in data:
+            for resource in data["images"].items():
+                self.load_image(parent+resource[0], resource[1])
+        # Load sounds
+
+        # Load fonts
+
+        # Load includes
+        if "includes" in data:
+            for include_path in data["includes"].items():
+                self.load_json_resources(include_path[1], parent=parent+include_path[0])
+
     def log(self, *msg, ignore_debug=False):
         if ignore_debug or self.debug:
             print("loader: " + " ".join([str(s) for s in msg]))

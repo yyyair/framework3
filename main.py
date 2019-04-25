@@ -21,11 +21,7 @@ class MyGame(Game):
 
     def load(self):
         self.loader.load_image("default", "Images/default.png")
-        self.loader.load_image("wall", "Images/wall.png")
-        self.loader.load_image("player", "Images/player.png")
-        self.loader.load_image("world", "Images/world.png")
-        self.loader.load_image("items", "Images/items.png")
-        self.loader.load_image("pikachu", "Images/pikachu.png")
+        self.loader.load_json_resources("Data/resources.json")
         x = self.loader.scene_from_file("Data/Scenes/main.json")
         self.add_scene(x)
 
@@ -39,60 +35,35 @@ class MyGame(Game):
         gui = GUIManager(game)
         s.setup_gui(gui)
 
-        test_gui = RichTextbox(game)
-        #gui.add(test_gui)
-
         test_button = Button(game)
         test_button.set_position(0, 512)
         test_button.resize(96, 32)
         test_button.func = lambda: self.start_game()
         s.add(test_button)
 
-        scroller = ScrollBar(game)
-        scroller.set_position(512, 128)
-        scroller.resize(16, 256)
-        scroller.max_index = 4
-        scroller.current_index = 0
-        s.add(scroller)
-
-        mbox = MessageBox(game)
-        mbox.set_position(572, 256)
-        #s.add(mbox)
-
-        drag = DragObject(game)
-        drag.set_position(0,0)
-        s.add(drag)
-
-        bundle = TestCanvas(game)
-        #bundle.add(drag)
-        bundle.set_position(572, 32)
-        bundle.resize(512, 512)
-        s.add(bundle)
-
-
-        # Player object
-        player = Actor(game)
-        player.x, player.y = 256, 256
-        player.sprite = default_animated_sprite()
-        player.sprite.material = self.loader.get_image("default")
-        s.add(player)
-
-        # Player movement
-        player.debug = False
-        amount = 0.0020
-        self.events.listen("key_down_w", lambda e: player.move_acceleration(0, -amount), player)
-        self.events.listen("key_up_w", lambda e: player.move_acceleration(0, amount), player)
-
-        self.events.listen("key_down_s", lambda e: player.move_acceleration(0, amount), player)
-        self.events.listen("key_up_s", lambda e: player.move_acceleration(0, -amount), player)
-
-        self.events.listen("key_down_d", lambda e: player.move_acceleration(amount, 0), player)
-        self.events.listen("key_up_d", lambda e: player.move_acceleration(-amount, 0), player)
-
-        self.events.listen("key_down_a", lambda e: player.move_acceleration(-amount, 0), player)
-        self.events.listen("key_up_a", lambda e: player.move_acceleration(amount, 0), player)
-
-        self.events.listen("key_up_space", lambda e: player.set_position(self.screen.get_height()/2,self.screen.get_width()/2))
+        # # Player object
+        # player = Actor(game)
+        # player.x, player.y = 256, 256
+        # player.sprite = default_animated_sprite()
+        # player.sprite.material = self.loader.get_image("default")
+        # s.add(player)
+        #
+        # # Player movement
+        # player.debug = False
+        # amount = 0.0020
+        # self.events.listen("key_down_w", lambda e: player.move_acceleration(0, -amount), player)
+        # self.events.listen("key_up_w", lambda e: player.move_acceleration(0, amount), player)
+        #
+        # self.events.listen("key_down_s", lambda e: player.move_acceleration(0, amount), player)
+        # self.events.listen("key_up_s", lambda e: player.move_acceleration(0, -amount), player)
+        #
+        # self.events.listen("key_down_d", lambda e: player.move_acceleration(amount, 0), player)
+        # self.events.listen("key_up_d", lambda e: player.move_acceleration(-amount, 0), player)
+        #
+        # self.events.listen("key_down_a", lambda e: player.move_acceleration(-amount, 0), player)
+        # self.events.listen("key_up_a", lambda e: player.move_acceleration(amount, 0), player)
+        #
+        # self.events.listen("key_up_space", lambda e: player.set_position(self.screen.get_height()/2,self.screen.get_width()/2))
 
         # Add scene to game
         self.add_scene(s)

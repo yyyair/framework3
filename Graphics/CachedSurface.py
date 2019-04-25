@@ -1,5 +1,4 @@
 __author__ = 'User'
-
 # TODO: Can try to cache location
 
 '''
@@ -8,32 +7,22 @@ params:
     surface factory - A parameter-less method that returns a surface
 '''
 class CachedSurface:
-    def __init__(self, surface_factory):
-        self.factory = surface_factory
-
-        self.cache = True
-        self.update_cache = False
+    def __init__(self, generator):
+        self.generate = generator
         # Can be used to implement "memory" for cached surface
         self.max_history = 1
 
         self.surface = None
 
     # Returns a copy of the surface
-    def get_surface(self):
-        if not self.cache:
-            return self.factory()
+    def surface(self):
+        if self.surface is not None:
+            return self.surface
+        else:
+            print("Tried getting ungenerated cached surface. Generating")
+            self.surface = self.generate()
+            return self.surface
 
-        # Update cache
-        if self.update_cache or self.surface is None:
-            self.surface = self.factory()
-            self.update_cache = False
+    def refresh(self):
+        self.surface = self.generate()
 
-        return self.surface.copy()
-
-    # Called when the surface needs to be resized
-    def update_cache(self):
-        self.update_cache = True
-
-    # Possible optimization for resizing
-    def resize_cache(self):
-        pass

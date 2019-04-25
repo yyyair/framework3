@@ -22,6 +22,11 @@ class GUIManager(ComponentManager):
         self.locked = False
 
         self.game.events.listen("mouse_down_1", self.on_mouse_click)
+
+        self.click_objects = []
+        self.hover_objects = []
+        self.mouse_up_objects = []
+        self.mouse_down_objects = []
         #self.game.events.listen("mouse_up_1", self.on_mouse_click)
 
     def on_mouse_click(self, e):

@@ -1,7 +1,13 @@
 {
   "images":
   {
-    "default": "Images/default.png"
+    "default": "Images/default.png",
+    "world": "Images/world.png",
+    "player": "Images/player.png",
+    "wall": "Images/wall.png",
+    "items": "Images/items.png",
+    "pikachu": "Images/pikachu.png"
+
   },
   "sounds":
   {
@@ -10,6 +16,8 @@
   "fonts":
   {
 
+  },
+  "includes": {
   }
 
 }
