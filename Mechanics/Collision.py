@@ -39,8 +39,8 @@ class CollisionBox(Rectangle, CollisionBody):
         self.y = y
 
     def resize(self, w, h):
-        self.height = h
-        self.width = w
+        self.height = int(h)
+        self.width = int(w)
         if self.parent is None:
             self.debug_surface = rectangle_surface(self.width, self.height, color=(255,255,255,128))
         elif  self.parent.has_property(Property.COLLISION_WALL):

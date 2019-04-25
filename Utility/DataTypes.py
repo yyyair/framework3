@@ -22,6 +22,7 @@ class Property:
     PLAYER = 121
     SHOP = 122
     PROJECTILE = 123
+    CAN_PUSH = 124
 
 # Item IDs
 class Item:

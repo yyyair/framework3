@@ -52,11 +52,11 @@ class Actor(SceneComponent):
         self.update_cache = False
 
     def resize(self, w, h):
-        self.width = w
-        self.height = h
+        self.width = int(w)
+        self.height = int(h)
         if self.sprite is not None:
-            self.sprite.width = w
-            self.sprite.height = h
+            self.sprite.width = int(w)
+            self.sprite.height = int(h)
         self.update_cache = True
 
     def scale(self, xratio, yratio):

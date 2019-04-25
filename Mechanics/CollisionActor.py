@@ -12,6 +12,7 @@ class CollisionActor(Actor):
         self.collision_body = CollisionBody()
         self.collision_body.parent = self
         self.name = "collision_actor"
+        self.ignore = []
 
         if Property.COLLISION not in self.properties:
             self.properties.append(Property.COLLISION)
@@ -30,12 +31,12 @@ class CollisionActor(Actor):
         else:
             if dx != 0:
                 Actor.move_position(self, dx, 0)
-                collisions = collision.find_collisions_by_component(self, lambda c: c.has_property(Property.COLLISION_WALL), 1)
+                collisions = collision.find_collisions_by_component(self, lambda c: c.has_property(Property.COLLISION_WALL)  and self not in c.ignore, 1)
                 if len(collisions) > 0:
                     Actor.move_position(self, -dx, 0)
             if dy != 0:
                 Actor.move_position(self, 0, dy)
-                collisions = collision.find_collisions_by_component(self, lambda c: c.has_property(Property.COLLISION_WALL), 1)
+                collisions = collision.find_collisions_by_component(self, lambda c: c.has_property(Property.COLLISION_WALL) and self not in c.ignore, 1)
                 if len(collisions) > 0:
                     Actor.move_position(self, 0, -dy)
 
@@ -69,6 +70,9 @@ class Wall(CollisionActor):
         sprite.crop = (0,0,48,48)
         self.sprite = sprite
 
+
+
+
 class InvisibleWall(CollisionActor):
     def __init__(self, game):
         CollisionActor.__init__(self, game)
@@ -80,6 +84,7 @@ class InvisibleWall(CollisionActor):
         box = CollisionBox(0, 0, self.width, self.height)
         box.parent = self
         self.collision_body = box
+        self.ignore = []
 
     def draw(self):
         pass

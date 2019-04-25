@@ -16,6 +16,7 @@ class Player(CollisionActor):
         self.name = "player"
         self.add_property(Property.HAS_INVENTORY)
         self.add_property(Property.CAN_INTERACT)
+        self.add_property(Property.CAN_PUSH)
         self.debug = True
         self.log(self.properties)
         # Movement

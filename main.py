@@ -10,6 +10,7 @@ from Addons.Player import Player
 from Addons.World import World
 from Addons.Item import ItemEntity
 from Addons.Shop import Shop
+from Addons.PushableEntity import PushableEntity
 
 from Mechanics.CollisionActor import Wall
 class MyGame(Game):
@@ -92,7 +93,12 @@ class MyGame(Game):
         shop.set_position(256, 512)
         world.add(shop)
 
-
+        push_entity = PushableEntity(self)
+        push_entity.set_position(256, 700)
+        world.add(push_entity)
+        push_entity2 = PushableEntity(self)
+        push_entity2.set_position(256, 800)
+        world.add(push_entity2)
         # Add temporary wall
         wall = Wall(self)
         #world.add(wall)
@@ -101,6 +107,8 @@ class MyGame(Game):
         world_room = World(self)
         world_room.setup_room(world, world_room.width * 3, world_room.height * 3)
         world.add(world_room)
+
+
 
         self.background_color = (0,0,0)
         self.background = None
