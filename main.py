@@ -9,7 +9,7 @@ from Graphics.GUI import *
 from Addons.Player import Player
 from Addons.World import World
 from Addons.Item import ItemEntity
-from Addons.Shop import Shop
+from Addons.NPC import NPC
 from Addons.PushableEntity import PushableEntity
 
 from Mechanics.CollisionActor import Wall
@@ -89,7 +89,7 @@ class MyGame(Game):
         world.add(item)
 
         # Add shop
-        shop = Shop(self)
+        shop = NPC(self)
         shop.set_position(256, 512)
         world.add(shop)
 

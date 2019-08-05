@@ -63,3 +63,12 @@ class Actor(SceneComponent):
         new_width = self.width if not self.scale_width else self.width * xratio
         new_height = self.height if not self.scale_height else self.height * yratio
         self.resize(new_width, new_height)
+
+    # Recursively searches for an actor's parent scene. Usually no recursion is required.
+    def get_parent_scene(self):
+        if self.parent is not None:
+            if isinstance(self.parent, Scene):
+                return self.parent
+            elif isinstance(self.parent, Actor):
+                return self.parent.get_parent_scene()
+        return None

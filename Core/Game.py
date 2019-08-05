@@ -9,7 +9,7 @@ from Core.Input import Keyboard, Mouse
 from Graphics.Scene import Scene
 from Mechanics.Collision import CollisionManager
 from Graphics.GUI import GUIManager
-
+from Gameplay.DialogBox import DialogBoxContainer
 import pygame
 
 MAX_FPS = 120
@@ -60,6 +60,8 @@ class Game(Component):
         self.scenes = {}
         self.current_scene = None
 
+        self.debug_time = ""
+
     # Initalize internal game stuff
     def start(self):
         self.log("Starting game!")
@@ -90,10 +92,21 @@ class Game(Component):
     def game_loop(self):
         while self.running:
             self.frame += 1
-            self.update()
-            self.draw()
             self.time += self.clock.get_time()
+
+            # Run game logic
+            self.update()
+            update_time = self.clock.get_time()
+            self.time += update_time
+
+            # Draw scene
+            self.draw()
+            draw_time = self.clock.get_time()
+            self.time += draw_time
+
+            # Limits game FPS
             self.clock.tick(MAX_FPS)
+            self.debug_time = "Update: %s, Draw: %s" % (update_time, draw_time)
 
     def init(self):
         # Set window name and icon
@@ -133,10 +146,15 @@ class Game(Component):
         scene = self.get_scene()
         if scene is not None:
             scene.draw()
+
+        # print debug info
         self.default_font.set_bold(True)
         text = self.default_font.render("FPS: %s" %self.clock.get_fps(), 0, (255,255,0), (0,0,0))
         self.screen.blit(text, (0,0))
+        text = self.default_font.render(self.debug_time, 0, (255,255,0), (0,0,0))
+        self.screen.blit(text, (0,16))
         self.default_font.set_bold(False)
+
         # Finish drawing
         pygame.display.flip()
 
@@ -157,6 +175,12 @@ class Game(Component):
             gui_manager = GUIManager(self)
             gui_manager.name = "gui_manager_"+scene.name
             scene.setup_gui(gui_manager)
+
+            # Add dialog support to scene
+            dialog_container = DialogBoxContainer(self)
+            scene.dialog_container = dialog_container
+            gui_manager.add(dialog_container)
+
 
         # Add collision if needed
         if scene.collision is None:

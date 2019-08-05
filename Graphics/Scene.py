@@ -33,6 +33,9 @@ class SceneComponent(GameComponent):
         # The room of the component. None = global
         self.room = None
 
+        # Dialog support
+        self.dialog_container = None
+
     # Sets the position of the component.
     # Also triggers component_moved event.
     # Use for discrete motion
