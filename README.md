@@ -27,9 +27,15 @@ The game contains scenes, which are the basic wrapper class for all game logic. 
 
 ## Game Loop
 ### Updating
-Responsivle for component logic and catching  and handling events.
+Responsivle for component logic, catching  and handling events.
 ### Drawing
-Draws stuff.
+Draws the current state of the game. By default, the current scene is drawn.
+
+## Graphics
+### Actor
+The most basic drawble GameObject. Usually will be part of a scene.
+### Scene
+A collection of several data types, mostly actor lists.
 
 ## Documentation
 Should probably make one.
